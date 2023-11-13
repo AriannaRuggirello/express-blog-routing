@@ -43,9 +43,50 @@ function index(req,res){
 
 }
 
+/**
+ * @param {express.Request} req 
+ * @param {express.Response} res 
+ */
+function show(req, res) {
+    res.type('json')
+    // Ottengo lo slug del post dalla richiesta
+    const postSlug = req.params.slug;
+    // Cerco il post corrispondente nello slug nell'array dei post
+    const post = posts.find((post) => post.slug == postSlug);
+
+    // Se non ho trovato il post, restituisco un errrore
+    if (!post) {
+        res.status(404).send(`Post ${postSlug} non trovato`);
+        return;
+    }
+    // Se ho trovato il post, lo restituisco come risposta JSON
+    res.json(post);
+  }
+
+
+  /**
+ * @param {express.Request} req 
+ * @param {express.Response} res 
+ */
+  function create(req, res) {
+    res.format({
+        html: function(){
+            return res.type("html").send("<h1>Creazione nuovo post</h1>");
+        },
+        default: function(){
+            if (!req.get('Accept') || !req.get('Accept').includes('html')) {
+                res.status(406).send("Not Acceptable");
+            }
+        }
+    });
+}
+
+
 
 
 // esporto 
 module.exports={
     index,
+    show,
+    create
 }

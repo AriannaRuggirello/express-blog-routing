@@ -26,7 +26,7 @@ app.use(express.static("public"));
 
 
 // Rotte relative all'entità pizze
-app.use("/", postsRouter)
+app.use("/posts", postsRouter)
 
 // avviamo il server
 app.listen(process.env.PORT || 3000, ()=>{
