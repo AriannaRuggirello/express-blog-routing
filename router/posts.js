@@ -12,6 +12,8 @@ router.get('/', homecontroller.index);
 router.get('/create', homecontroller.create);
 // show
 router.get('/:slug', homecontroller.show);
+// download image
+router.get('/:slug/download', homecontroller.downloadImage);
 
 
 

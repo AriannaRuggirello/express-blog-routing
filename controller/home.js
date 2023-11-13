@@ -3,6 +3,9 @@ const express= require('express');
 // importo json
 const posts = require('../db/db.json')
 
+const path = require("path");
+const fs = require("fs");
+
 /**
  * @param {express.Request} req 
  * @param {express.Response} res 
@@ -26,8 +29,9 @@ function index(req,res){
                 <img src="/imgs/posts/${post.image}" alt="">
                   
                     <h5 class="card-title">${post.title}</h5>
+                    
                     <div class="card-body">
-                    <a class="card-text"> #${post.tags}</a>
+                    <a class="card-title"> #${post.tags}</a>
                     </div>
                 </div>
             </div>
@@ -82,11 +86,45 @@ function show(req, res) {
 }
 
 
+/**
+ * @param {express.Request} req 
+ * @param {express.Response} res 
+ */
+
+function downloadImage(req, res) {
+    // Ottengo lo slug del post dalla richiesta.
+    const postSlug = req.params.slug;
+
+    // Cerco il post corrispondente allo slug nella lista dei post.
+    const post = posts.find((post) => post.slug == postSlug);
+
+    // Se il post non viene trovato, restituisco uno stato 404 con un messaggio appropriato.
+    if (!post) {
+        res.status(404).send(`Post ${postSlug} non trovato`);
+        return;
+    }
+
+    // Costruisco il percorso completo dell'immagine utilizzando lo slug del post.
+    const imagePath = path.resolve(__dirname, '..', 'public', 'imgs', 'posts', post.image);
+
+    // Verifico se l'immagine esiste sul percorso specificato.
+    fs.access(imagePath, fs.constants.F_OK, (err) => {
+        // Se l'immagine non viene trovata, restituisco uno stato 404 con un messaggio appropriato.
+        if (err) {
+            res.status(404).send('Immagine non trovata');
+            return;
+        }
+    });
+
+    // Se tutto è a posto, invio l'immagine come download.
+    res.download(imagePath);
+}
 
 
 // esporto 
 module.exports={
     index,
     show,
-    create
+    create,
+    downloadImage
 }
